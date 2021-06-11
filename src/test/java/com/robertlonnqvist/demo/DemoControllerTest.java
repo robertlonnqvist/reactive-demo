@@ -1,7 +1,8 @@
-package com.example.demo;
+package com.robertlonnqvist.demo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -10,7 +11,6 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -32,24 +32,15 @@ class DemoControllerTest {
     @LocalServerPort
     int port;
 
-    WebClient webClient;
+    @Autowired
+    WebClient.Builder webClientBuilder;
 
-    private static DataBuffer buffer() {
-        DefaultDataBufferFactory factory = new DefaultDataBufferFactory();
-        Random random = new Random();
-        byte[] bytes = new byte[DATA_LENGTH];
-        random.nextBytes(bytes);
-        return factory.wrap(bytes);
-    }
+    WebClient webClient;
 
     @BeforeEach
     void each() {
-        webClient = WebClient.builder()
+        webClient = webClientBuilder
                 .baseUrl("http://localhost:" + port)
-                .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(configurer -> configurer.defaultCodecs()
-                                .maxInMemorySize(8_000_000 * 2))
-                        .build())
                 .build();
     }
 
@@ -70,5 +61,13 @@ class DemoControllerTest {
         assertNotNull(block);
         assertEquals(HttpStatus.OK, block.getStatusCode());
         assertEquals(DATA_LENGTH, block.getHeaders().getContentLength());
+    }
+
+    private static DataBuffer buffer() {
+        DefaultDataBufferFactory factory = new DefaultDataBufferFactory();
+        Random random = new Random();
+        byte[] bytes = new byte[DATA_LENGTH];
+        random.nextBytes(bytes);
+        return factory.wrap(bytes);
     }
 }

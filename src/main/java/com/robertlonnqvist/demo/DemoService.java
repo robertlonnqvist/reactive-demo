@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.robertlonnqvist.demo;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,11 @@ import java.net.URI;
 @Service
 public class DemoService {
 
-    private final WebClient webClient = WebClient.create();
+    private final WebClient webClient;
+
+    public DemoService(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.build();
+    }
 
     public Mono<ResponseEntity<DataBuffer>> get() {
         return webClient.get().uri(URI.create("https://jsonplaceholder.typicode.com/todos"))

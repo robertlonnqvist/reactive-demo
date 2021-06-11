@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.robertlonnqvist.demo;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.ResponseEntity;
